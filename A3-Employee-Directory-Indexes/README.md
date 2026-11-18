@@ -3,7 +3,7 @@
 **Syllabus focus:** Unit 3: Single-field, compound and multikey indexes, explain plan, hidden index, index errors, index validation, index order
 **Database / Collection:** `companyDB.employees`
 
-Full runnable script: [`solution.js`](solution.js)
+All queries for this scenario in one file: [`solution.js`](solution.js)
 
 ---
 

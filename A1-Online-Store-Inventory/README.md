@@ -3,7 +3,7 @@
 **Syllabus focus:** Unit 1: Updating documents (`$set`, `$inc`, `$unset`, replace), deleting documents, aggregation basics
 **Database / Collection:** `shopDB.products`
 
-Full runnable script: [`solution.js`](solution.js)
+All queries for this scenario in one file: [`solution.js`](solution.js)
 
 ---
 

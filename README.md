@@ -1,36 +1,64 @@
-# MongoDB Project – Set A
+# MongoDB Mid-Term Lab – Set A
 
-Solutions to the MongoDB assignment **Set A** (Scenarios A1 to A4: updates and deletes, queries, indexing and replication).
+This repository contains the questions and solutions for the **MongoDB Mid-Term Lab, Set A**. It has four practical scenarios covering updates and deletes, queries, indexing and replication.
 
-Each scenario has its own folder containing:
-- `README.md`: the full question (scenario, sample data, requirements) followed by the solution, expected output and explanation for every task
-- `solution.js`: a runnable script containing all the queries for that scenario
+Each scenario folder contains:
 
-## Contents
+- **`README.md`**: the full question (scenario, sample data and requirements), then the query, output and explanation for every task
+- **`solution.js`**: all the MongoDB Shell (`mongosh`) commands for that scenario in one file
 
-| Scenario | Topic | Syllabus unit | Database.Collection |
-|----------|-------|---------------|---------------------|
-| [A1: Online Store Inventory Update](A1-Online-Store-Inventory/) | `$set`, `$inc`, `$unset`, `replaceOne`, `deleteOne`/`deleteMany`, aggregation | Unit 1 | `shopDB.products` |
-| [A2: Student Records: Insert, Query, Sort and Project](A2-Student-Records/) | Proper/improper inserts, equality & comparison queries, `$in`, `$elemMatch`, sort, limit, projection | Unit 2 | `collegeDB.students` |
-| [A3: Employee Directory: Speeding up Searches with Indexes](A3-Employee-Directory-Indexes/) | Single-field, compound and multikey indexes, `explain()`, hidden indexes, unique index errors | Unit 3 | `companyDB.employees` |
-| [A4: Banking App: Building and Checking a Replica Set](A4-Banking-Replica-Set/) | Replica set setup, primary/secondary, write concern, read preference, oplog, elections, `rs.status()` | Unit 4 | `bankDB.accounts` |
+---
 
-## How to run
+## Scenarios
 
-You need MongoDB and the MongoDB Shell (`mongosh`).
+| # | Scenario | Syllabus unit | Database.Collection |
+|---|----------|---------------|---------------------|
+| A1 | [Online Store Inventory Update](A1-Online-Store-Inventory/) | Unit 1: Updating & deleting documents, aggregation basics | `shopDB.products` |
+| A2 | [Student Records: Insert, Query, Sort and Project](A2-Student-Records/) | Unit 2: Inserts, queries, sorting, limiting, projection | `collegeDB.students` |
+| A3 | [Employee Directory: Speeding up Searches with Indexes](A3-Employee-Directory-Indexes/) | Unit 3: Indexes and explain plans | `companyDB.employees` |
+| A4 | [Banking App: Building and Checking a Replica Set](A4-Banking-Replica-Set/) | Unit 4: Replication | `bankDB.accounts` |
 
-```bash
-# start a local server (skip if MongoDB is already running)
-mongod --dbpath ./data
+---
 
-# run any scenario
-mongosh A1-Online-Store-Inventory/solution.js
-mongosh A2-Student-Records/solution.js
-mongosh A3-Employee-Directory-Indexes/solution.js
+### A1: Online Store Inventory Update
+A small electronics store corrects a price, updates stock, removes an unwanted field, replaces an outdated product, deletes discontinued items and builds a stock summary.
+
+**Concepts:** `updateOne`, `updateMany`, `$set`, `$inc`, `$unset`, `replaceOne`, `deleteOne`, `deleteMany`, `aggregate` with `$match`, `$group`, `$sort`, `$project`
+
+### A2: Student Records: Insert, Query, Sort and Project
+A college clerk inserts student records (including a deliberate duplicate `_id` mistake), and the Head of Department asks for reports.
+
+**Concepts:** `insertOne`, `insertMany`, duplicate key error `E11000`, equality queries, `$gte`, `$in`, `$elemMatch` on arrays of sub-documents, `sort`, `limit`, projection
+
+### A3: Employee Directory: Speeding up Searches with Indexes
+Department and skill searches on an HR collection are made faster with indexes, and each improvement is checked with `explain("executionStats")`.
+
+**Concepts:** `COLLSCAN` vs `IXSCAN`, single-field index, compound index and index order (ESR rule), multikey index, `hideIndex` / `unhideIndex`, unique index errors, `getIndexes`
+
+### A4: Banking App: Building and Checking a Replica Set
+A 3-node replica set `rs0` (ports 27017, 27018, 27019) keeps the bank's accounts database running even if one server crashes.
+
+**Concepts:** `rs.initiate`, PRIMARY / SECONDARY, write concern `w: "majority"`, read preferences, the oplog (`local.oplog.rs`), `rs.stepDown` and elections, `rs.status()` and replication lag
+
+---
+
+## Repository structure
+
 ```
-
-A4 needs a 3-node replica set instead of a single server. Follow the steps in [A4's README](A4-Banking-Replica-Set/README.md) (start the nodes with `start-nodes.bat` / `start-nodes.sh`, run `rs.initiate`, then run its `solution.js`).
-
-Each A1–A3 script drops and recreates its own collection first, so it can be run again and again. You can also paste the commands from each README into an interactive `mongosh` session one task at a time.
-
-> **Note on the GitHub language bar:** it shows *JavaScript* because the MongoDB Shell (`mongosh`) runs JavaScript. Every MongoDB query here (`db.products.find(...)` etc.) is a JavaScript call, so `.js` is the standard extension for MongoDB scripts.
+mongodb-project/
+├── README.md
+├── A1-Online-Store-Inventory/
+│   ├── README.md
+│   └── solution.js
+├── A2-Student-Records/
+│   ├── README.md
+│   └── solution.js
+├── A3-Employee-Directory-Indexes/
+│   ├── README.md
+│   └── solution.js
+└── A4-Banking-Replica-Set/
+    ├── README.md
+    ├── solution.js
+    ├── start-nodes.bat
+    └── start-nodes.sh
+```

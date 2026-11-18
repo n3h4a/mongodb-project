@@ -3,7 +3,7 @@
 **Syllabus focus:** Unit 2: Proper/improper inserts, equality and comparison queries, `$in`, `$elemMatch`, sorting, limiting, projection
 **Database / Collection:** `collegeDB.students`
 
-Full runnable script: [`solution.js`](solution.js)
+All queries for this scenario in one file: [`solution.js`](solution.js)
 
 ---
 
