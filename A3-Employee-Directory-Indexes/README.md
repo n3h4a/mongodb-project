@@ -160,7 +160,7 @@ executionStats: { nReturned: 4, totalKeysExamined: 4, totalDocsExamined: 4, ... 
 
 (If only `dept_1` were used, the plan would contain a `SORT` stage above the `IXSCAN`, meaning the results are sorted in memory.)
 
-**Index order rule (ESR: Equality, Sort, Range):** the equality field (`dept`) comes first, then the sort field (`salary`). The index also supports `.sort({ salary: 1 })` by scanning backwards, and queries on `dept` alone (prefix), but **not** queries on `salary` alone.
+**Order matters (ESR rule: Equality, Sort, Range):** put the field used for equality (`dept`) first and the sort field (`salary`) next. With `{ salary: 1, dept: 1 }`, MongoDB could not use the index to filter by department efficiently, because the entries would be ordered by salary first and IT employees would be scattered through the whole index. The index also supports `.sort({ salary: 1 })` by scanning backwards, and queries on `dept` alone (prefix), but **not** queries on `salary` alone.
 
 ---
 
@@ -230,7 +230,7 @@ db.employees.unhideIndex("skills_1")
 
 Running the explain again shows `IXSCAN` on `skills_1` with 3 documents examined.
 
-**Why hide an index?** A hidden index is still **maintained** on every write, but the query planner ignores it. This lets you test what would happen if you dropped an index, without actually dropping it. If performance gets worse, you just unhide it instead of rebuilding the whole index.
+**Why hide an index?** A hidden index is still **maintained** on every write, but the query planner ignores it (hidden indexes require MongoDB 4.4 or later). This lets you test what would happen if you dropped an index, without actually dropping it. If performance gets worse, you just unhide it instead of rebuilding the whole index.
 
 ---
 
