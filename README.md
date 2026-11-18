@@ -6,6 +6,7 @@ Each scenario folder contains:
 
 - **`README.md`**: the full question (scenario, sample data and requirements), then the query, output and explanation for every task
 - **`solution.js`**: all the MongoDB Shell (`mongosh`) commands for that scenario in one file
+- **`screenshots/`**: a screenshot of every task's queries and their output, taken from a real run on MongoDB 7.0 and also shown inside the README under each task
 
 ---
 
@@ -49,16 +50,20 @@ mongodb-project/
 ├── README.md
 ├── A1-Online-Store-Inventory/
 │   ├── README.md
-│   └── solution.js
+│   ├── solution.js
+│   └── screenshots/
 ├── A2-Student-Records/
 │   ├── README.md
-│   └── solution.js
+│   ├── solution.js
+│   └── screenshots/
 ├── A3-Employee-Directory-Indexes/
 │   ├── README.md
-│   └── solution.js
+│   ├── solution.js
+│   └── screenshots/
 └── A4-Banking-Replica-Set/
     ├── README.md
     ├── solution.js
     ├── start-nodes.bat
-    └── start-nodes.sh
+    ├── start-nodes.sh
+    └── screenshots/
 ```

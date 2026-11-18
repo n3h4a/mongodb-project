@@ -32,6 +32,8 @@ Open a separate terminal window for each `mongod` process. The paths below are f
 
 ## Solution
 
+> All screenshots in this scenario are from a real run on MongoDB 7.0.34 with mongosh 2.3.8. They are stored in the [`screenshots/`](screenshots/) folder.
+
 ### Task 1: Start the nodes and initiate the replica set
 
 **Step 1: create a data folder for each member and start three `mongod` processes** (one terminal window each):
@@ -87,6 +89,14 @@ rs0 [direct: primary] test>
 > mongosh "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=rs0"
 > ```
 
+**Screenshot:**
+
+![Task 1 - task1a-start-nodes](screenshots/task1a-start-nodes.png)
+
+**Screenshot:**
+
+![Task 1 - task1b-initiate](screenshots/task1b-initiate.png)
+
 ---
 
 ### Task 2: Identify primary and secondaries
@@ -107,6 +117,10 @@ rs.status().members.map(m => ({ name: m.name, state: m.stateStr, health: m.healt
 Other quick checks: `db.hello().primary` prints `'localhost:27017'`, and `db.hello().isWritablePrimary` is `true` on the primary.
 
 **Explanation:** the **primary** receives all writes. **Secondaries** copy the data from it by replaying its oplog. `health: 1` means the member is up (0 = down). Which member becomes primary can differ on your machine, but there is always exactly one.
+
+**Screenshot:**
+
+![Task 2 - task2-primary-secondary](screenshots/task2-primary-secondary.png)
 
 ---
 
@@ -135,6 +149,10 @@ db.accounts.insertOne(
 
 For a bank, `w: "majority"` is important: with `w: 1`, the primary alone acknowledges the write. If it fails before the secondaries copy the write, the write can be **rolled back**.
 
+**Screenshot:**
+
+![Task 3 - task3-write-concern](screenshots/task3-write-concern.png)
+
 ---
 
 ### Task 4: Read preference
@@ -161,6 +179,10 @@ The read may now be served by a secondary. The document is there because the sec
 | `secondary` | Only secondaries: reduces load on the primary, data may be slightly stale. |
 | `secondaryPreferred` | Secondary if available, otherwise the primary. |
 | `nearest` | Member with the lowest network latency, primary or secondary. |
+
+**Screenshot:**
+
+![Task 4 - task4-read-preference](screenshots/task4-read-preference.png)
 
 ---
 
@@ -192,6 +214,10 @@ db.oplog.rs.find({ ns: "bankDB.accounts", op: "i" }).sort({ $natural: -1 }).limi
 | `ts` | Timestamp of the operation: `t` = seconds, `i` = counter within that second. Secondaries use it to know how far they have replicated. |
 
 `$natural: -1` sorts in reverse insertion order, so the newest entry comes first. `rs.printReplicationInfo()` shows the oplog size and the time range it covers.
+
+**Screenshot:**
+
+![Task 5 - task5-oplog](screenshots/task5-oplog.png)
 
 ---
 
@@ -226,6 +252,10 @@ rs.status().members.map(m => ({ name: m.name, state: m.stateStr, health: m.healt
 The data is still there (`db.getSiblingDB("bankDB").accounts.find()` still returns Kumar's account), and applications using the replica set connection string automatically send new writes to the new primary. This is **automatic failover**.
 
 > To simulate a real crash instead, close the terminal window of the primary (or run `db.adminCommand({ shutdown: 1 })` on it). The same election happens. That member shows `health: 0` and `state: '(not reachable/healthy)'` until it is restarted, after which it rejoins as a SECONDARY and catches up from the oplog.
+
+**Screenshot:**
+
+![Task 6 - task6-stepdown-election](screenshots/task6-stepdown-election.png)
 
 ---
 
@@ -284,6 +314,10 @@ source: localhost:27019
 ```
 
 **Explanation:** replication lag is the delay between a write on the primary and the same write on a secondary (the difference in `optimeDate`). On one machine with very little data, the lag is **0 seconds**, so the replica set is healthy. A large or growing lag means a secondary is overloaded or has network problems. It would serve stale reads, and `w: "majority"` writes would become slow.
+
+**Screenshot:**
+
+![Task 7 - task7-replication-health](screenshots/task7-replication-health.png)
 
 ---
 

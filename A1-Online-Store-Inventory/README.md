@@ -51,6 +51,12 @@ db.products.insertMany([
 
 ## Solution
 
+> All screenshots in this scenario are from a real run on MongoDB 7.0.34 with mongosh 2.3.8. They are stored in the [`screenshots/`](screenshots/) folder.
+
+**Sample data inserted:**
+
+![Sample data](screenshots/00-sample-data.png)
+
 ### Task 1: Change a price with `$set`
 
 ```js
@@ -70,6 +76,10 @@ Check: `db.products.findOne({ name: "Keyboard" })` now shows `price: 1400`.
 
 **Explanation:** `$set` changes only the field it names. Every other field of the document stays as it was.
 
+**Screenshot:**
+
+![Task 1 - task1-set](screenshots/task1-set.png)
+
 ---
 
 ### Task 2: Increase stock with `$inc`
@@ -84,6 +94,10 @@ db.products.updateOne(
 **Output:** `matchedCount: 1, modifiedCount: 1`. The stock of Wireless Mouse changes from **50 to 75**.
 
 **Explanation:** `$inc` adds the given number to the current value on the server, so you don't need to read the old value first. A negative number would decrease the stock.
+
+**Screenshot:**
+
+![Task 2 - task2-inc](screenshots/task2-inc.png)
 
 ---
 
@@ -103,6 +117,10 @@ db.products.updateMany(
 ```
 
 **Explanation:** The empty filter `{}` matches all 8 documents. Only 2 of them (Mouse and Keyboard) actually had `oldCode`, so `modifiedCount` is 2. The value given to `$unset` (`""`) is ignored. Only the field name matters.
+
+**Screenshot:**
+
+![Task 3 - task3-unset](screenshots/task3-unset.png)
 
 ---
 
@@ -130,6 +148,10 @@ db.products.replaceOne(
 
 **Explanation:** `replaceOne` throws away every field of the old document except `_id` and stores the new document in its place. The replacement document must not contain update operators such as `$set`.
 
+**Screenshot:**
+
+![Task 4 - task4-replace](screenshots/task4-replace.png)
+
 ---
 
 ### Task 5: Delete a single document
@@ -142,6 +164,10 @@ db.products.deleteOne({ name: "Old Floppy Drive" })
 ```js
 { acknowledged: true, deletedCount: 1 }
 ```
+
+**Screenshot:**
+
+![Task 5 - task5-deleteone](screenshots/task5-deleteone.png)
 
 ---
 
@@ -159,6 +185,10 @@ db.products.deleteMany({ discontinued: true })
 Dial-up Modem and CD Drive are removed. `db.products.countDocuments()` returns **5**.
 
 **Explanation:** `deleteOne` removes at most one matching document. `deleteMany` removes all of them. Old Floppy Drive was already deleted in Task 5, so only 2 discontinued products are left to delete.
+
+**Screenshot:**
+
+![Task 6 - task6-deletemany](screenshots/task6-deletemany.png)
 
 ---
 
@@ -180,8 +210,8 @@ db.products.aggregate([
 **Output**
 ```js
 [
-  { category: 'Accessories', totalStock: 105, avgPrice: 1100 },
-  { category: 'Computers',   totalStock: 25,  avgPrice: 33500 }
+  { totalStock: 105, avgPrice: 1100, category: 'Accessories' },
+  { totalStock: 25, avgPrice: 33500, category: 'Computers' }
 ]
 ```
 
@@ -196,4 +226,9 @@ db.products.aggregate([
 
 Working: Accessories = Mouse (75) + Keyboard (30) = 105, avg (800 + 1400) / 2 = 1100. Computers = Laptop (10) + Monitor (15) = 25, avg (55000 + 12000) / 2 = 33500.
 
-*Field order inside each result may differ slightly.*
+*`$project` keeps the included fields in their existing order and adds the new `category` field at the end, so `category` appears last.*
+
+**Screenshot:**
+
+![Task 7 - task7-aggregate](screenshots/task7-aggregate.png)
+

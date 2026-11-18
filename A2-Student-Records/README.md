@@ -39,6 +39,8 @@ The data to be stored (`marks` is the overall percentage; `scores` holds subject
 
 ## Solution
 
+> All screenshots in this scenario are from a real run on MongoDB 7.0.34 with mongosh 2.3.8. They are stored in the [`screenshots/`](screenshots/) folder.
+
 Each student is stored like this:
 
 ```js
@@ -66,6 +68,10 @@ db.students.insertOne({
 { acknowledged: true, insertedId: 101 }
 ```
 
+**Screenshot:**
+
+![Task 1 - task1-insertone](screenshots/task1-insertone.png)
+
 ---
 
 ### Task 2: Improperly formed insert (duplicate `_id`)
@@ -86,6 +92,10 @@ collegeDB.students index: _id_ dup key: { _id: 101 }
 **Reason:** `_id` is the primary key of every MongoDB collection. MongoDB automatically creates a **unique index** (`_id_`) on it, so two documents can never share the same `_id`. The insert is rejected and the original Arun document is **not changed**.
 
 **Fix:** use a new `_id` value, or leave `_id` out so MongoDB generates an `ObjectId` automatically.
+
+**Screenshot:**
+
+![Task 2 - task2-duplicate-id](screenshots/task2-duplicate-id.png)
 
 ---
 
@@ -112,6 +122,10 @@ db.students.insertMany([
   insertedIds: { '0': 102, '1': 103, '2': 104, '3': 105, '4': 106 } }
 ```
 
+**Screenshot:**
+
+![Task 3 - task3-insertmany](screenshots/task3-insertmany.png)
+
 ---
 
 ### Task 4: Equality query
@@ -121,6 +135,10 @@ db.students.find({ dept: "CSE" })
 ```
 
 **Output:** 3 documents: Arun (78), Chitra (91) and Farah (59).
+
+**Screenshot:**
+
+![Task 4 - task4-equality](screenshots/task4-equality.png)
 
 ---
 
@@ -134,6 +152,10 @@ db.students.find({ marks: { $gte: 75 } })
 
 **Explanation:** `$gte` means "greater than or equal to". Other comparison operators are `$gt`, `$lt`, `$lte`, `$eq` and `$ne`.
 
+**Screenshot:**
+
+![Task 5 - task5-comparison](screenshots/task5-comparison.png)
+
 ---
 
 ### Task 6: `$in` operator
@@ -145,6 +167,10 @@ db.students.find({ dept: { $in: ["CSE", "IT"] } })
 **Output:** 5 documents: Arun, Bala, Chitra, Eswar and Farah. Divya (ECE) is not returned.
 
 **Explanation:** `$in` matches if the field equals **any** value in the list. It is a shorter way of writing `$or` on the same field.
+
+**Screenshot:**
+
+![Task 6 - task6-in](screenshots/task6-in.png)
 
 ---
 
@@ -165,6 +191,10 @@ db.students.find({ "scores.subject": "DBMS", "scores.mark": { $gt: 80 } })
 ```
 
 would **wrongly also return Divya**. Each condition can be satisfied by a *different* array element: her DBMS element satisfies `subject: "DBMS"`, and her Maths mark (89) satisfies `mark > 80`. `$elemMatch` forces both conditions to be true for the **same** array element.
+
+**Screenshot:**
+
+![Task 7 - task7-elemmatch](screenshots/task7-elemmatch.png)
 
 ---
 
@@ -192,3 +222,8 @@ db.students.find({}, { _id: 0, name: 1, marks: 1 })
 | `{ _id: 0, name: 1, marks: 1 }` | Projection: show only `name` and `marks`, hide `_id` (it is shown by default). |
 | `.sort({ marks: -1 })` | `-1` = descending, so the highest marks come first. |
 | `.limit(3)` | Return only the first 3 documents after sorting. |
+
+**Screenshot:**
+
+![Task 8 - task8-sort-limit-project](screenshots/task8-sort-limit-project.png)
+

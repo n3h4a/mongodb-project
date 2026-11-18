@@ -51,6 +51,8 @@ db.employees.insertMany([
 
 ## Solution
 
+> All screenshots in this scenario are from a real run on MongoDB 7.0.34 with mongosh 2.3.8. They are stored in the [`screenshots/`](screenshots/) folder.
+
 > In the `explain()` output, the important fields are:
 > - `queryPlanner.winningPlan`: the **stage** (`COLLSCAN`, `IXSCAN`, `FETCH`, `SORT`) and the `indexName` used
 > - `executionStats.nReturned`: documents returned
@@ -58,6 +60,10 @@ db.employees.insertMany([
 > - `executionStats.totalDocsExamined`: documents read from the collection
 >
 > In an ideal query, `nReturned`, `totalKeysExamined` and `totalDocsExamined` are all equal.
+
+**Sample data inserted:**
+
+![Sample data](screenshots/00-sample-data.png)
 
 ### Task 1: Explain plan without an index
 
@@ -77,6 +83,10 @@ executionStats: {
 ```
 
 **Observation:** Stage is **`COLLSCAN`** (collection scan). MongoDB had to read **all 8 documents** to return the 4 IT employees (Anil, Charan, Elan, Hema). With lakhs of documents this becomes very slow.
+
+**Screenshot:**
+
+![Task 1 - task1-explain-no-index](screenshots/task1-explain-no-index.png)
 
 ---
 
@@ -113,6 +123,10 @@ executionStats: {
 | totalKeysExamined | 0 | 4 |
 | totalDocsExamined | 8 | 4 |
 | nReturned | 4 | 4 |
+
+**Screenshot:**
+
+![Task 2 - task2-single-field-index](screenshots/task2-single-field-index.png)
 
 ---
 
@@ -162,6 +176,10 @@ executionStats: { nReturned: 4, totalKeysExamined: 4, totalDocsExamined: 4, ... 
 
 **Order matters (ESR rule: Equality, Sort, Range):** put the field used for equality (`dept`) first and the sort field (`salary`) next. With `{ salary: 1, dept: 1 }`, MongoDB could not use the index to filter by department efficiently, because the entries would be ordered by salary first and IT employees would be scattered through the whole index. The index also supports `.sort({ salary: 1 })` by scanning backwards, and queries on `dept` alone (prefix), but **not** queries on `salary` alone.
 
+**Screenshot:**
+
+![Task 3 - task3-compound-index](screenshots/task3-compound-index.png)
+
 ---
 
 ### Task 4: Multikey index on the `skills` array
@@ -196,6 +214,10 @@ executionStats: { nReturned: 3, totalKeysExamined: 3, totalDocsExamined: 3, ... 
 ```
 
 **Explanation:** When an index is created on an array field, MongoDB automatically makes it a **multikey index**. It stores **one index entry for every element** of the array, so each employee here has 2 entries. `isMultiKey: true` in the explain output confirms this.
+
+**Screenshot:**
+
+![Task 4 - task4-multikey-index](screenshots/task4-multikey-index.png)
 
 ---
 
@@ -232,6 +254,10 @@ Running the explain again shows `IXSCAN` on `skills_1` with 3 documents examined
 
 **Why hide an index?** A hidden index is still **maintained** on every write, but the query planner ignores it (hidden indexes require MongoDB 4.4 or later). This lets you test what would happen if you dropped an index, without actually dropping it. If performance gets worse, you just unhide it instead of rebuilding the whole index.
 
+**Screenshot:**
+
+![Task 5 - task5-hidden-index](screenshots/task5-hidden-index.png)
+
 ---
 
 ### Task 6: Unique index errors
@@ -242,8 +268,8 @@ db.employees.createIndex({ city: 1 }, { unique: true })
 
 **Output (error)**
 ```
-MongoServerError: Index build failed: ... Collection companyDB.employees ... ::
-caused by :: E11000 duplicate key error collection: companyDB.employees
+MongoServerError[DuplicateKey]: Index build failed: <uuid>: Collection companyDB.employees
+( <uuid> ) :: caused by :: E11000 duplicate key error collection: companyDB.employees
 index: city_1 dup key: { city: "Chennai" }
 ```
 
@@ -257,6 +283,10 @@ db.employees.createIndex({ name: 1 }, { unique: true })
 **Output:** `name_1`
 
 From now on, inserting another employee named, for example, "Anil" fails with an `E11000 duplicate key` error. (In a real company, a field such as an employee code or email ID would be a better choice for a unique index, because two people can share a name.)
+
+**Screenshot:**
+
+![Task 6 - task6-unique-index](screenshots/task6-unique-index.png)
 
 ---
 
@@ -278,6 +308,10 @@ db.employees.getIndexes()
 ```
 
 **Explanation:** `_id_` is created automatically with every collection. The failed `city_1` index does not appear. `skills_1` shows no `hidden` flag because it was unhidden in Task 5.
+
+**Screenshot:**
+
+![Task 7 - task7-get-indexes](screenshots/task7-get-indexes.png)
 
 ---
 
